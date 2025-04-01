@@ -1,0 +1,149 @@
+/* ========================== */
+/*         Banner.css          */
+/* ========================== */
+
+/* Contenedor principal del banner */
+.banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #121212;  /* Fondo oscuro */
+    color: #fff;
+    padding: 0.8rem 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    width: 100%;
+}
+
+/* Estilo del logo */
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Barra de búsqueda */
+.sarch-bar {
+    flex: 1;  /* Ocupa el espacio central */
+    display: flex;
+    justify-content: center;
+}
+
+.sarch-bar input {
+    width: 300px;
+    padding: 0.5rem 1rem;
+    background-color: transparent;
+    border: 1px solid #888;
+    border-radius: 20px;
+    color: #fff;
+    outline: none;
+}
+
+.sarch-bar input::placeholder {
+    color: #888;
+}
+
+/* Navegación */
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: #00bcd4;
+}
+
+/* Cambiador de tema */
+.theme-switcher {
+    display: flex;
+    align-items: center;
+}
+
+.theme-switcher button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: transform 0.2s ease;
+}
+
+.theme-switcher img {
+    width: 20px;    /* 🔹 Tamaño reducido del icono */
+    height: 20px;   /* 🔹 Tamaño reducido del icono */
+    filter: invert(1); /* Invertir colores para que el icono destaque en modo oscuro */
+}
+
+.theme-switcher button:hover {
+    transform: scale(1.1); /* Efecto suave al pasar el mouse */
+}
+
+/* Botón de conexión */
+.connect-wallet .wallet-button {
+    background-color: #fff;
+    color: #000;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.connect-wallet .wallet-button:hover {
+    background-color: #00bcd4;
+    color: #fff;
+}
+
+/* 🔹 Modo Claro */
+.banner.light {
+    background-color: #f5f5f5;
+    color: #000;
+}
+
+.sarch-bar input {
+    border: 1px solid #444;
+    color: #000;
+}
+
+.banner.light .nav-links a {
+    color: #000;
+}
+
+.banner.light .nav-links a:hover {
+    color: #00bcd4;
+}
+
+.banner.light .connect-wallet .wallet-button {
+    background-color: #000;
+    color: #fff;
+}
+
+.banner.light .connect-wallet .wallet-button:hover {
+    background-color: #00bcd4;
+    color: #fff;
+}
+
+/* 🔹 Diseño Responsive */
+@media (max-width: 1024px) {
+    .banner {
+        flex-direction: row;
+        padding: 0.8rem 1rem;
+    }
+
+    .sarch-bar input {
+        width: 200px;
+    }
+
+    .nav-links {
+        display: none; /* Ocultar navegación en pantallas pequeñas */
+    }
+
+    .connect-wallet {
+        display: block;
+    }
+}

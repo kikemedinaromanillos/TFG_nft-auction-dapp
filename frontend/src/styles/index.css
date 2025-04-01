@@ -1,0 +1,40 @@
+/* ======================== */
+/*         index.css         */
+/* ======================== */
+
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: 'Arial', sans-serif;
+  background-color: #f0f2f5;
+  color: #333;
+}
+
+/* Estilo del contenedor principal */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Texto general */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+}
+
+/* Links */
+a {
+  text-decoration: none;
+  color: #007BFF;
+}
+
+a:hover {
+  text-decoration: underline;
+}
