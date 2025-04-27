@@ -837,42 +837,6 @@
       "artifacts": [
         "NFTCollection"
       ]
-    },
-    "/mnt/c/Users/enmay/desktop/UCJC/TFG/nft-auction-dapp/backend/contracts/HelloWorld.sol": {
-      "lastModificationDate": 1741107745595,
-      "contentHash": "d95048cfb62dfbff2adec6d2651f3a59",
-      "sourceName": "contracts/HelloWorld.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "evmVersion": "paris",
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "HelloWorld"
-      ]
     }
   }
 }

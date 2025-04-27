@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { ethers } from "ethers";
 import NFTCollectionABI from "./contracts/NFTCollection.json";
 import EnglishAuctionABI from "./contracts/EnglishAuction.json";
+import deployments from "./contracts/deployments.json";
 
 const Web3Context = createContext();
 
@@ -10,8 +11,9 @@ export const Web3Provider = ({ children }) => {
     const [nftContract, setNftContract] = useState(null);
     const [auctionContract, setAuctionContract] = useState(null);
 
-    const NFT_CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-    const AUCTION_CONTRACT_ADDRESS = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
+
+    const NFT_CONTRACT_ADDRESS = deployments.NFTCollection;
+    const AUCTION_CONTRACT_ADDRESS = deployments.EnglishAuction;
 
     // 🔹 Conectar MetaMask
     const connectWallet = async () => {
