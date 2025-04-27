@@ -1,26 +1,34 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
 import './styles/App.css';
 import { useWeb3 } from './Web3Context';
-import Banner from './components/Banner';  
-import AuctionCard from './components/AuctionCard'; 
+import Banner from './components/Banner';
+import AuctionCard from './components/AuctionCard';
+import MintNFT from "./components/MintNFT";
+import ApproveNFT from "./components/ApproveNFT";
+import CreateAuction from "./components/CreateAuction";
+import TransferNFT from "./components/TransferNFT";
+import BidAuction from "./components/BidAuction";
+import FinalizeAuction from "./components/FinalizeAuction";
 
 function App() {
-  const { account } = useWeb3();
+  const { account, nftContract, auctionContract } = useWeb3();
 
   return (
-    <>
+    <div className="container">
       <Banner />
 
-      { account && (
-        <div className="content">
-          <h1>¡Bienvenido a tu Marketplace de Criptos y NFTs!</h1>
-          <p>Compra, vende y subasta tus activos digitales de forma descentralizada.</p>
-          <AuctionCard />
-        </div>
+      {!account && <p style={{ textAlign: "center" }}>Conecta tu wallet para comenzar</p>}
+
+      {account && (
+        <main>
+          <MintNFT />
+          <ApproveNFT />
+          <CreateAuction />
+          <TransferNFT />
+          <BidAuction />
+          <FinalizeAuction />
+        </main>
       )}
-    </>
+    </div>
   );
 }
 

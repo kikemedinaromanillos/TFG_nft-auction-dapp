@@ -1,43 +1,46 @@
-import { useState } from "react";
-import "../styles/Banner.css";
 import { useWeb3 } from "../Web3Context";
-import darkModeIcon from "../assets/dark-theme.svg";
-import lightModeIcon from "../assets/light-theme.png";
+import "../styles/Banner.css";
 
-export default function Banner() {
-    const [darkMode, setDarkMode] = useState(true);
-    const { account, connectWallet } = useWeb3();
+const Banner = () => {
+  const { account, connectWallet } = useWeb3();
 
-    return (
-        <nav className={`banner ${darkMode ? "light" : "dark"}`}>
-            <div className="logo">
-                <span>💎 SuperRare</span>
-            </div>
+  return (
+    <div className="banner">
+      <div className="banner-section logo">
+        <img src="/logo-dark.svg" alt="Logo" height="32" />
+      </div>
 
-            <div className="sarch-bar">
-                <input type="text" placeholder="Buscar..." />
-            </div>
+      <div className="banner-section search">
+        <input type="text" placeholder="Search..." className="search-bar" />
+      </div>
 
-            <div className="nav-links">
-                <a href="#">ARTISTS</a>
-                <a href="#">EXPLORE</a>
-                <a href="#">FEED</a>
-                <a href="#">TRENDING</a>
-                <a href="#">CURATION</a>
-            </div>
+      <nav className="banner-section nav">
+        <ul className="nav-list">
+          <li>ARTIST</li>
+          <li>EXPLORE</li>
+          <li>FEED</li>
+          <li>TRENDING</li>
+          <li>CURATION</li>
+        </ul>
+      </nav>
 
-            <div className="theme-switcher">
-                <button onClick={() => setDarkMode(!darkMode)}>
-                <img src={lightModeIcon} alt="Dark Mode" />
-                    {/* Logo{darkMode ? <img src={lightModeIcon} alt="Dark Mode" /> : <img src={darkModeIcon} alt="Dark Mode" />}*/}
-                </button>
-            </div>
+      <div className="banner-section right">
+        <button className="theme-toggle">🌓</button>
+    </div>
 
-            <div className="connect-wallet">
-                <button onClick={connectWallet} className="wallet-button">
-                    {account ? account.slice(0, 6) + "..." + account.slice(-4) : "Connect Wallet"}
-                </button>
-            </div>
-        </nav>
-    );
-}
+    <div className="banner-section wallet">
+        {account ? (
+            <button className="wallet-button">
+            {account.slice(0, 6)}...{account.slice(-4)}
+            </button>
+        ) : (
+            <button className="wallet-button" onClick={connectWallet}>
+            Connect Wallet
+            </button>
+        )}
+    </div>
+    </div>
+  );
+};
+
+export default Banner;

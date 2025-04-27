@@ -152,102 +152,89 @@ Si devuelve `'Hola Blockchain!'`, significa que el contrato funciona correctamen
 # --------------------------------------------------------
 # --------------------------------------------------------
 
-# Pruebas de la Subasta en Hardhat Console
+# 🧪 Pruebas del Flujo de Subasta con NFT creado por un Usuario en Hardhat Console
 
 ## 1️⃣ Conectar las Cuentas y los Contratos
 
-### Obtener las cuentas de prueba:
+### Obtener cuentas
 ```javascript
-const [deployer, owner, bidder1, bidder2] = await ethers.getSigners();
+const [deployer, user, bidder1, bidder2] = await ethers.getSigners();
 ```
-📌 `owner` = Vendedor (desplegó los contratos)  
-📌 `bidder1` y `bidder2` = Usuarios que pujan en la subasta
+📌 `user` = Creador del NFT (vendedor)  
+📌 `bidder1` y `bidder2` = Postores  
+📌 `deployer` = Plataforma (cobra comisión)
 
-### Conectar el contrato `NFTCollection`:
+### Conectar contratos
 ```javascript
 const NFTCollection = await ethers.getContractFactory("NFTCollection");
-const nftCollection = await NFTCollection.attach("0x5FbDB2315678afecb367f032d93F642f64180aa3");
-```
+const nftCollection = await NFTCollection.attach("DIRECCION_DEL_CONTRATO_NFT");
 
-### Conectar el contrato `EnglishAuction`:
-```javascript
 const EnglishAuction = await ethers.getContractFactory("EnglishAuction");
-const auction = await EnglishAuction.attach("0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9");
+const auction = await EnglishAuction.attach("DIRECCION_DEL_CONTRATO_AUCTION");
 ```
-
 ---
-## 2️⃣ Verificar el Estado de la Subasta
-Ejecuta estos comandos para ver el estado inicial:
+## 3️⃣ Verificar Estado de Subasta
 ```javascript
-await auction.highestBid(); // Debería ser 0 al inicio
-await auction.highestBidder(); // Debería ser 0x000... si nadie ha pujado
-await auction.auctionEndTime(); // Tiempo en el que finaliza la subasta
+await auction.highestBid();
+await auction.highestBidder();
+await auction.auctionEndTime();
 ```
 
 ---
-## 3️⃣ Realizar Pujas en la Subasta
+## 4️⃣ Realizar Pujas
 
-### 📌 Bidder1 hace una oferta de 0.02 ETH
+### Bidder1 ofrece 0.02 ETH
 ```javascript
 await auction.connect(bidder1).bid({ value: ethers.parseEther("0.02") });
 ```
-🔹 Verificar la oferta más alta después de la puja:
+Verificar:
 ```javascript
 await auction.highestBid();
 await auction.highestBidder();
 ```
-**Resultado esperado:**
-- `highestBid = 0.02 ETH`
-- `highestBidder = dirección de bidder1`
 
-### 📌 Bidder2 supera la puja con 0.05 ETH
+### Bidder2 ofrece 0.05 ETH
 ```javascript
 await auction.connect(bidder2).bid({ value: ethers.parseEther("0.05") });
 ```
-🔹 Verificar nuevamente la mejor oferta:
+Verificar:
 ```javascript
 await auction.highestBid();
 await auction.highestBidder();
 ```
-**Resultado esperado:**
-- `highestBid = 0.05 ETH`
-- `highestBidder = dirección de bidder2`
-- `Bidder1` recupera automáticamente sus 0.02 ETH
 
 ---
-## 4️⃣ Revisar los Balances Después de las Pujas
-Para asegurarnos de que los ETH se han descontado correctamente:
+## 5️⃣ Verificar Balances tras Pujas
 ```javascript
-ethers.formatEther(await ethers.provider.getBalance(bidder1.address)); // Debería estar casi igual, ya que recuperó su dinero
-ethers.formatEther(await ethers.provider.getBalance(bidder2.address)); // Debería haber bajado ~0.05 ETH
-ethers.formatEther(await ethers.provider.getBalance(owner.address)); // Debería seguir igual hasta que se finalice la subasta
+ethers.formatEther(await ethers.provider.getBalance(bidder1.address));
+ethers.formatEther(await ethers.provider.getBalance(bidder2.address));
+ethers.formatEther(await ethers.provider.getBalance(user.address));
 ```
 
 ---
-## 5️⃣ Finalizar la Subasta
-### 📌 Adelantar el tiempo en la red local de Hardhat:
+## 6️⃣ Finalizar Subasta
+### Avanzar el tiempo:
 ```javascript
-await network.provider.send("evm_increaseTime", [86400]); // Avanzar 1 día
-await network.provider.send("evm_mine"); // Minar un nuevo bloque
+await network.provider.send("evm_increaseTime", [86400]);
+await network.provider.send("evm_mine");
 ```
-🔹 Ahora sí, finaliza la subasta:
+### Finalizar:
 ```javascript
-await auction.finalizeAuction();
+await auction.connect(user).finalizeAuction();
 ```
-Esto transferirá el NFT al mejor postor y enviará el pago al vendedor.
 
 ---
-## 6️⃣ Verificar los Balances Finales
-Después de finalizar la subasta, revisa:
+## 7️⃣ Verificar Resultados Finales
 ```javascript
-ethers.formatEther(await ethers.provider.getBalance(bidder1.address)); // Debe ser igual al inicio
-ethers.formatEther(await ethers.provider.getBalance(bidder2.address)); // Debe haber bajado 0.05 ETH + fees
-ethers.formatEther(await ethers.provider.getBalance(owner.address)); // Debe haber aumentado ~0.0475 ETH (0.05 - comisión)
-ethers.formatEther(await ethers.provider.getBalance(deployer.address)); // Debería haber recibido la comisión
+ethers.formatEther(await ethers.provider.getBalance(bidder1.address));
+ethers.formatEther(await ethers.provider.getBalance(bidder2.address));
+ethers.formatEther(await ethers.provider.getBalance(user.address));
+ethers.formatEther(await ethers.provider.getBalance(deployer.address));
 ```
 
-### 📌 Verificar el nuevo dueño del NFT:
+### Verificar propiedad del NFT:
 ```javascript
 await nftCollection.ownerOf(0);
 ```
-**Resultado esperado:** La dirección de `bidder2`, ya que ganó la subasta.
+✅ Debe ser `bidder2`
+

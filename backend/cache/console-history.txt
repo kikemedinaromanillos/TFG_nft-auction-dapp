@@ -1,5 +1,105 @@
 await nftCollection.ownerOf(0);
 ethers.formatEther(await ethers.provider.getBalance(deployer.address));
+ethers.formatEther(await ethers.provider.getBalance(user.address));
+ethers.formatEther(await ethers.provider.getBalance(bidder2.address));
+ethers.formatEther(await ethers.provider.getBalance(bidder1.address));
+await auction.connect(user).finalizeAuction();
+await network.provider.send("evm_mine");
+await network.provider.send("evm_increaseTime", [86400]);
+ethers.formatEther(await ethers.provider.getBalance(user.address));
+ethers.formatEther(await ethers.provider.getBalance(bidder2.address));
+ethers.formatEther(await ethers.provider.getBalance(bidder1.address));
+await auction.highestBidder();
+await auction.highestBid();
+await auction.connect(bidder2).bid({ value: ethers.parseEther("0.05") });
+await auction.highestBidder();
+await auction.highestBid();
+await auction.connect(bidder1).bid({ value: ethers.parseEther("0.02") });
+await auction.auctionEndTime();
+await auction.highestBidder();
+await auction.highestBid();
+await nftCollection.connect(user).transferFrom(user.address, auction.target, 0);
+await nftCollection.connect(user).approve(auction.target, 0);
+await tx.wait();
+const tx = await nftCollection.connect(user).mintNFT(tokenURI, { value: mintPrice });
+const tokenURI = "ipfs://Qm...";
+const mintPrice = await nftCollection.mintPrice();
+const auction = await EnglishAuction.attach("0x948b3c65b89df0b4894abe91e6d02fe579834f8f");
+const EnglishAuction = await ethers.getContractFactory("EnglishAuction");
+const nftCollection = await NFTCollection.attach("0x5fbdb2315678afecb367f032d93f642f64180aa3");
+const NFTCollection = await ethers.getContractFactory("NFTCollection");
+const [deployer, user, bidder1, bidder2] = await ethers.getSigners();
+const [deployer, owner, bidder1, bidder2] = await ethers.getSigners();
+await nft.connect(user).approve(auction.target, 0);
+await tx.wait();
+const tx = await nft.connect(user).mintNFT(tokenURI, { value: mintPrice });
+const tokenURI = "ipfs://Qm..."; 
+const mintPrice = await nft.mintPrice();
+const auction = await Auction.attach("0xe7f1725e7734ce288f8367e1bb143e90bb3f0512");
+const Auction = await ethers.getContractFactory("EnglishAuction");
+const nft = await NFT.attach("0x5fbdb2315678afecb367f032d93f642f64180aa3");
+const NFT = await ethers.getContractFactory("NFTCollection");
+const [deployer, user] = await ethers.getSigners();
+await nftCollection.ownerOf(0);
+ethers.formatEther(await ethers.provider.getBalance(deployer.address)); // Debería haber recibido la comisión
+ethers.formatEther(await ethers.provider.getBalance(owner.address)); // Debe haber aumentado ~0.0475 ETH (0.05 - comisión)
+ethers.formatEther(await ethers.provider.getBalance(bidder2.address)); // Debe haber bajado 0.05 ETH + fees
+ethers.formatEther(await ethers.provider.getBalance(bidder1.address)); // Debe ser igual al inicio
+await auction.finalizeAuction();
+await network.provider.send("evm_mine"); // Minar un nuevo bloque
+await network.provider.send("evm_increaseTime", [86400]); // Avanzar 1 día
+ethers.formatEther(await ethers.provider.getBalance(owner.address)); // Debería seguir igual hasta que se finalice la subasta
+ethers.formatEther(await ethers.provider.getBalance(bidder2.address)); // Debería haber bajado ~0.05 ETH
+ethers.formatEther(await ethers.provider.getBalance(bidder1.address)); // Debería estar casi igual, ya que recuperó su dinero
+await auction.highestBidder();
+await auction.highestBid();
+await auction.connect(bidder2).bid({ value: ethers.parseEther("0.05") });
+await auction.highestBidder();
+await auction.highestBid();
+await auction.connect(bidder1).bid({ value: ethers.parseEther("0.02") });
+await auction.auctionEndTime(); // Tiempo en el que finaliza la subasta
+await auction.highestBidder(); // Debería ser 0x000... si nadie ha pujado
+await auction.highestBid(); // Debería ser 0 al inicio
+const auction = await EnglishAuction.attach("0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9");
+const EnglishAuction = await ethers.getContractFactory("EnglishAuction");
+const nftCollection = await NFTCollection.attach("0x5FbDB2315678afecb367f032d93F642f64180aa3");
+const NFTCollection = await ethers.getContractFactory("NFTCollection");
+const [deployer, owner, bidder1, bidder2] = await ethers.getSigners();
+ethers.formatEther(await ethers.provider.getBalance(owner.address)); // Debe haber aumentado ~0.0475 ETH (0.05 - comisión)
+ethers.provider.getBalance(owner.address)); // Debe haber aumentado ~0.0475 ETH (0.05 - comisión)
+await nftCollection.ownerOf(0);
+ethers.formatEther(await ethers.provider.getBalance(deployer.address)); // Debería haber recibido la comisión
+ethers.formatEther(await ethers.provider.getBalance(owner.address)); // Debe haber aumentado ~0.0475 ETH (0.05 - comisión)
+ethers.formatEther(await ethers.provider.getBalance(bidder2.address)); // Debe haber bajado 0.05 ETH + fees
+ethers.formatEther(await ethers.provider.getBalance(bidder1.address)); // Debe ser igual al inicio
+await auction.finalizeAuction();
+await network.provider.send("evm_mine"); // Minar un nuevo bloque
+await network.provider.send("evm_increaseTime", [86400]); // Avanzar 1 día
+ethers.formatEther(await ethers.provider.getBalance(owner.address)); // Debería seguir igual hasta que se finalice la subasta
+ethers.formatEther(await ethers.provider.getBalance(bidder2.address)); // Debería haber bajado ~0.05 ETH
+ethers.formatEther(await ethers.provider.getBalance(bidder1.address)); // Debería estar casi igual, ya que recuperó su dinero
+await auction.highestBidder();
+await auction.highestBid();
+await auction.connect(bidder2).bid({ value: ethers.parseEther("0.05") });
+await auction.highestBidder();
+await auction.highestBid();
+await auction.connect(bidder1).bid({ value: ethers.parseEther("0.02") });
+await auction.auctionEndTime();
+await auction.highestBidder();
+await auction.highestBid();
+const auction = await EnglishAuction.attach("0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9");
+const EnglishAuction = await ethers.getContractFactory("EnglishAuction");
+const nftCollection = await NFTCollection.attach("0x5FbDB2315678afecb367f032d93F642f64180aa3");
+const NFTCollection = await ethers.getContractFactory("NFTCollection");
+const [deployer, owner, bidder1, bidder2] = await ethers.getSigners();
+const EnglishAuction = await
+const nftCollection = await NFTCollection.attach("0x5FbDB2315678afecb367f032d93F642f64180aa3");
+const NFTCollection = await ethers.getContractFactory("NFTCollection");
+const nftCollection = await
+const NFTCollection = await ethers.getContractFactory("NFTCollection");
+const [deployer, owner, bidder1, bidder2] = await ethers.getSigners();
+await nftCollection.ownerOf(0);
+ethers.formatEther(await ethers.provider.getBalance(deployer.address));
 ethers.formatEther(await ethers.provider.getBalance(owner.address));
 ethers.formatEther(await ethers.provider.getBalance(bidder2.address));
 ethers.formatEther(await ethers.provider.getBalance(bidder1.address));
