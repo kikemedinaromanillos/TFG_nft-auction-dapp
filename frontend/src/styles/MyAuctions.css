@@ -1,0 +1,52 @@
+.my-auctions {
+    max-width: 1000px;
+    margin: 3rem auto;
+    padding: 1rem;
+    color: white;
+    text-align: center;
+  }
+  
+  .my-auction-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .my-auction-card {
+    background: #1e1e1e;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+  }
+  
+  .my-auction-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+  }
+  
+  .my-auction-card a {
+    display: block;
+    margin-top: 0.5rem;
+    color: #42a5f5;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .finalize-link {
+    color: #4caf50 !important;
+  }
+  
+  .countdown {
+    font-weight: bold;
+    color: #ffd54f;
+  }
+  
+  .expired {
+    color: #e57373;
+    font-weight: bold;
+  }
+  

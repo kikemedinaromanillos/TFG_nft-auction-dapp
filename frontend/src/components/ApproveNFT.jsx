@@ -1,47 +1,43 @@
 import { useState } from "react";
 import { useWeb3 } from "../Web3Context";
+import { useToast } from "../hooks/useToast";
+import "../styles/ApproveNFT.css";
 
 const ApproveNFT = () => {
-  const { account, nftContract, auctionContract } = useWeb3();
-  const [nftId, setNftId] = useState("");
-  const [status, setStatus] = useState("");
+  const { nftContract, auctionManagerContract, account } = useWeb3();
+  const { showSuccess, showError, showWarning } = useToast();
+  const [tokenId, setTokenId] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleApprove = async () => {
-    if (!account || !nftContract || !auctionContract) {
-      alert("Please connect your wallet first");
-      return;
-    }
-    if (nftId === "") {
-      alert("Please enter the NFT ID");
-      return;
-    }
+    if (!tokenId) return showWarning("Introduce un tokenId");
 
     try {
-      alert("MetaMask will ask you to approve the transaction...");
-
-      const tx = await nftContract.approve(await auctionContract.getAddress(), nftId);
+      setLoading(true);
+      const auctionAddress = await auctionManagerContract.getAddress();
+      const tx = await nftContract.approve(auctionAddress, tokenId);
       await tx.wait();
-
-      setStatus(`✅ NFT ID ${nftId} approved for auction!`);
-    } catch (err) {
-      console.error(err);
-      setStatus("❌ Error approving NFT");
+      showSuccess(`NFT #${tokenId} aprobado correctamente`);
+    } catch (error) {
+      console.error(error);
+      showError("Error al aprobar el NFT");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="card">
-      <h2>Approve NFT for Auction</h2>
+    <div className="approve-container">
+      <h3>Autorizar NFT para subasta</h3>
       <input
-        type="text"
-        placeholder="Enter NFT ID"
-        value={nftId}
-        onChange={(e) => setNftId(e.target.value)}
+        type="number"
+        placeholder="Token ID"
+        value={tokenId}
+        onChange={(e) => setTokenId(e.target.value)}
       />
-      <button onClick={handleApprove} disabled={!account || !nftContract || !auctionContract}>
-        Approve NFT
+      <button onClick={handleApprove} disabled={!account || loading}>
+        {loading ? "Aprobando..." : "Aprobar NFT"}
       </button>
-      {status && <p>{status}</p>}
     </div>
   );
 };

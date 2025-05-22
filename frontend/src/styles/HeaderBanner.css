@@ -1,0 +1,76 @@
+.header-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #111;
+  color: #fff;
+  padding: 1rem 2rem;
+  border-bottom: 2px solid #222;
+}
+
+.logo img {
+  height: 40px;
+}
+
+.center {
+  flex: 1;
+  text-align: center;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+button {
+  background-color: #1e88e5;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #1565c0;
+}
+
+.connected {
+  font-weight: bold;
+  color: #90ee90;
+}
+
+.nav-item {
+  margin-left: 1rem;
+}
+
+.my-auctions-link a {
+  color: #42a5f5;
+  text-decoration: none;
+  font-weight: bold;
+  background: #222;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.my-auctions-link a:hover {
+  background: #2d2d2d;
+}
+
+.disconnect-btn {
+  background-color: #c62828;
+  border: none;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  margin-left: 1rem;
+  cursor: pointer;
+}
+
+.disconnect-btn:hover {
+  background-color: #b71c1c;
+}
+
+

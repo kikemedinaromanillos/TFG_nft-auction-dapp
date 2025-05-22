@@ -1,46 +1,53 @@
 const hre = require("hardhat");
 const fs = require("fs");
+const path = require("path");
 
 async function main() {
-  const [deployer, user] = await hre.ethers.getSigners();
+  const [deployer] = await hre.ethers.getSigners();
 
-  console.log("Deploying contracts with the account:", deployer.address);
+  const NFTFactory = await hre.ethers.getContractFactory("NFTCollection");
+  const nft = await NFTFactory.deploy();
+  await nft.waitForDeployment();
+  const nftAddress = await nft.getAddress();
 
-  const NFTCollectionFactory = await hre.ethers.getContractFactory("NFTCollection");
-  const nftCollection = await NFTCollectionFactory.connect(deployer).deploy();
-  await nftCollection.waitForDeployment();
+  const AuctionFactory = await hre.ethers.getContractFactory("AuctionManager");
+  const auction = await AuctionFactory.deploy(deployer.address); // deployer será la wallet que recibe la comisión
+  await auction.waitForDeployment();
+  const auctionAddress = await auction.getAddress();
 
-  const nftCollectionAddress = await nftCollection.getAddress();
-  console.log("NFTCollection deployed at:", nftCollectionAddress);
+  console.log("✅ Contracts deployed:");
+  console.log("NFTCollection:", nftAddress);
+  console.log("AuctionManager:", auctionAddress);
 
-  const EnglishAuctionFactory = await hre.ethers.getContractFactory("EnglishAuction");
-  const englishAuction = await EnglishAuctionFactory.connect(deployer).deploy(
-    nftCollectionAddress,
-    0,
-    hre.ethers.parseEther("0.01"),
-    86400,
-    deployer.address
-  );
-  await englishAuction.waitForDeployment();
+  // Rutas frontend
+  const frontContractsPath = path.resolve(__dirname, "../../frontend/src/contracts");
 
-  const auctionAddress = await englishAuction.getAddress();
-  console.log("EnglishAuction deployed at:", auctionAddress);
+  // Crear directorio si no existe
+  if (!fs.existsSync(frontContractsPath)) {
+    fs.mkdirSync(frontContractsPath, { recursive: true });
+  }
 
+  // Guardar direcciones
   const deployments = {
-    NFTCollection: nftCollectionAddress,
-    EnglishAuction: auctionAddress,
+    NFTCollection: nftAddress,
+    AuctionManager: auctionAddress,
   };
+  fs.writeFileSync(
+    path.join(frontContractsPath, "deployments.json"),
+    JSON.stringify(deployments, null, 2)
+  );
 
-  const path = require("path");
+  // Guardar ABIs
+  const nftArtifact = await hre.artifacts.readArtifact("NFTCollection");
+  const auctionArtifact = await hre.artifacts.readArtifact("AuctionManager");
 
-  const deploymentsPath = path.resolve(__dirname, "../../frontend/src/contracts/deployments.json");
-  fs.writeFileSync(deploymentsPath, JSON.stringify(deployments, null, 2));
-  
+  fs.writeFileSync(path.join(frontContractsPath, "NFTCollection.json"), JSON.stringify(nftArtifact, null, 2));
+  fs.writeFileSync(path.join(frontContractsPath, "AuctionManager.json"), JSON.stringify(auctionArtifact, null, 2));
 
-  console.log("\n Deployments saved to frontend/src/contracts/deployments.json\n");
+  console.log("✅ Artifacts and addresses saved to frontend/src/contracts/");
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
 });

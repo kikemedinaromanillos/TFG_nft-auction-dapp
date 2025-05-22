@@ -1,0 +1,64 @@
+.auction-list {
+    max-width: 900px;
+    margin: 3rem auto;
+    padding: 1rem;
+    color: white;
+    text-align: center;
+  }
+  
+  .auction-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .auction-card {
+    background: #1e1e1e;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+  }
+  
+  .auction-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+  }
+  
+  .auction-card a {
+    color: #42a5f5;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .countdown {
+    font-weight: bold;
+    color: #ffd54f;
+  }
+  
+  .expired {
+    color: #e57373;
+    font-weight: bold;
+  }
+
+  .no-auctions {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    color: #ff8a65;
+  }
+
+  .auction-ready {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    color: #000000;
+  }
+
+  .no-auctions {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    color: #ff8a65;
+  }
+  
+  

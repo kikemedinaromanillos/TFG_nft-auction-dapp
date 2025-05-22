@@ -1,72 +1,44 @@
 import { useState } from "react";
 import { useWeb3 } from "../Web3Context";
+import { useToast } from "../hooks/useToast";
+import "../styles/MintNFT.css";
 
 const MintNFT = () => {
-  const { account, nftContract } = useWeb3();
+  const { nftContract, account } = useWeb3();
+  const { showSuccess, showError } = useToast();
   const [tokenURI, setTokenURI] = useState("");
-  const [status, setStatus] = useState("");
-  const [mintedTokenId, setMintedTokenId] = useState(null);
+  const [minting, setMinting] = useState(false);
 
   const handleMint = async () => {
-    if (!account || !nftContract) {
-      alert("Please connect your wallet first");
-      return;
-    }
-    if (!tokenURI) {
-      alert("Please enter a token URI");
-      return;
-    }
+    if (!tokenURI) return showWarning("Introduce un URI válido");
 
     try {
-      const mintPrice = await nftContract.mintPrice();
-      const tx = await nftContract.mintNFT(tokenURI, { value: mintPrice });
-      const receipt = await tx.wait();
-
-      // 🛰️ Buscar el evento Transfer en el receipt
-      const transferEvent = receipt.logs
-        .map(log => {
-          try {
-            return nftContract.interface.parseLog(log);
-          } catch {
-            return null;
-          }
-        })
-        .filter(log => log && log.name === "Transfer")[0];
-
-      if (transferEvent) {
-        const tokenId = transferEvent.args.tokenId.toString();
-        setMintedTokenId(tokenId);
-        console.log("✅ NFT minted with ID:", tokenId);
-        setStatus(`✅ NFT minted successfully! Token ID: ${tokenId}`);
-      } else {
-        setStatus("✅ NFT minted, but could not detect Token ID");
-      }
-    } catch (err) {
-      console.error(err);
-      setStatus("❌ Error minting NFT");
+      setMinting(true);
+      const price = await nftContract.mintPrice();
+      const tx = await nftContract.mintNFT(tokenURI, { value: price });
+      await tx.wait();
+      showSuccess("NFT minteado correctamente");
+      setTokenURI("");
+    } catch (error) {
+      console.error(error);
+      showError("Error al mintear el NFT");
+    } finally {
+      setMinting(false);
     }
   };
 
   return (
-    <div className="card">
-      <h2>Mint Your NFT</h2>
+    <div className="mint-container">
+      <h3>Mintear nuevo NFT</h3>
       <input
         type="text"
-        placeholder="Enter token URI (ipfs://...)"
+        placeholder="Token URI (ej: ipfs://...)"
         value={tokenURI}
         onChange={(e) => setTokenURI(e.target.value)}
       />
-      <button onClick={handleMint} disabled={!account || !nftContract}>
-        Mint NFT
+      <button onClick={handleMint} disabled={!account || minting}>
+        {minting ? "Minteando..." : "Mintear NFT"}
       </button>
-
-      {status && <p>{status}</p>}
-
-      {mintedTokenId !== null && (
-        <div>
-          <strong>New NFT ID:</strong> {mintedTokenId}
-        </div>
-      )}
     </div>
   );
 };

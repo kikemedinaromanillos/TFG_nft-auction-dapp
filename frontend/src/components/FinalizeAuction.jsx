@@ -1,48 +1,83 @@
-import { useState } from "react";
-import { ethers } from "ethers";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { useWeb3 } from "../Web3Context";
-import EnglishAuctionABI from "../contracts/EnglishAuction.json";
+import { useToast } from "../hooks/useToast";
+import "../styles/FinalizeAuction.css";
 
 const FinalizeAuction = () => {
-    const { signer, account } = useWeb3();
-    const [auctionAddress, setAuctionAddress] = useState("");
-    const [status, setStatus] = useState("");
-    
-    const handleFinalize = async () => {
-        if (!signer) return alert("Please connect your wallet first");
-        if (!auctionAddress) return alert("Please fill the auction address");
-    
-        try {
-        const auctionContract = new ethers.Contract(
-            auctionAddress,
-            EnglishAuctionABI.abi,
-            signer
-        );
-    
-        const tx = await auctionContract.finalizeAuction();
-        await tx.wait();
-    
-        setStatus("Auction finalized successfully!");
-        } catch (err) {
-        console.error(err);
-        setStatus("Error finalizing auction");
-        }
-    };
-    
-    return (
-        <div className="finalize-auction">
-        <h2>Finalize Auction</h2>
-        <input
-            type="text"
-            placeholder="Enter auction address"
-            value={auctionAddress}
-            onChange={(e) => setAuctionAddress(e.target.value)}
-        />
-        <button onClick={handleFinalize} disabled={!account}>
-            Finalize Auction
+  const { id } = useParams();
+  const { auctionManagerContract, nftContract, account } = useWeb3();
+  const [auction, setAuction] = useState(null);
+  const [tokenURI, setTokenURI] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const fetchAuction = async () => {
+    try {
+      const data = await auctionManagerContract.auctions(id);
+      const uri = await nftContract.tokenURI(data.tokenId);
+      setAuction(data);
+      setTokenURI(uri);
+    } catch (err) {
+      console.error("Error al cargar la subasta", err);
+    }
+  };
+
+  const handleFinalize = async () => {
+    try {
+      setLoading(true);
+      const tx = await auctionManagerContract.finalizeAuction(id);
+      await tx.wait();
+      showSuccess("Subasta finalizada correctamente");
+      fetchAuction();
+    } catch (err) {
+      console.error(err);
+      showError("Error al finalizar la subasta");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (auctionManagerContract && nftContract) {
+      fetchAuction();
+    }
+  }, [id, auctionManagerContract, nftContract]);
+
+  if (!auction) return <p>Cargando subasta...</p>;
+
+  const currentTime = Math.floor(Date.now() / 1000);
+  const canFinalize =
+    account?.toLowerCase() === auction.seller.toLowerCase() &&
+    currentTime >= Number(auction.endTime) &&
+    !auction.ended;
+
+  return (
+    <div className="finalize-container">
+      <h2>Finalizar Subasta #{id}</h2>
+
+      <img
+        src={tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/")}
+        alt={`NFT #${auction.tokenId}`}
+      />
+
+      <p><strong>NFT #{auction.tokenId}</strong></p>
+      <p><strong>Finaliza:</strong> {new Date(Number(auction.endTime) * 1000).toLocaleString()}</p>
+      <p><strong>Estado:</strong> {auction.ended ? "Finalizada ✅" : "Activa ⏳"}</p>
+
+      {auction.ended ? (
+        <p className="finalized-status">✅ Subasta finalizada</p>
+      ) : canFinalize ? (
+        <button onClick={handleFinalize} disabled={loading}>
+          {loading ? "Finalizando..." : "Finalizar Subasta"}
         </button>
-        {status && <p>{status}</p>}
-        </div>
-    );
-}
+      ) : (
+        <p className="note">Solo el vendedor puede finalizar la subasta una vez haya terminado.</p>
+      )}
+
+      {message && <p className="status-msg">{message}</p>}
+    </div>
+  );
+};
+
 export default FinalizeAuction;

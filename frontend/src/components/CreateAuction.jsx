@@ -1,72 +1,63 @@
 import { useState } from "react";
-import { ethers } from "ethers";
 import { useWeb3 } from "../Web3Context";
-import NFTCollectionABI from "../contracts/NFTCollection.json";
-import EnglishAuctionABI from "../contracts/EnglishAuction.json";
-
-
-const NFT_CONTRACT_ADDRESS = "0xYourNFTContractAddress"; // Replace with your NFT contract address
+import { useToast } from "../hooks/useToast";
+import { parseEther } from "ethers";
+import "../styles/CreateAuction.css";
 
 const CreateAuction = () => {
-  const { signer, account } = useWeb3();
+  const { nftContract, auctionManagerContract, account } = useWeb3();
+  const { showSuccess, showError, showWarning } = useToast();
   const [tokenId, setTokenId] = useState("");
-  const [startingBid, setStartingBid] = useState("");
-  const [duration, setDuration] = useState("86400"); // por defecto 1 día
-  const [status, setStatus] = useState("");
+  const [startingBid, setStartingBid] = useState("0.01");
+  const [duration, setDuration] = useState("86400");
+  const [loading, setLoading] = useState(false);
 
   const handleCreateAuction = async () => {
-    if (!signer) return alert("Please connect your wallet first");
-    if (!tokenId || !startingBid || !duration) return alert("Please fill all fields");
+    if (!tokenId || !startingBid || !duration) return showWarning("Rellena todos los campos");
 
     try {
-      const AuctionFactory = new ethers.ContractFactory(
-        EnglishAuctionABI.abi,
-        EnglishAuctionABI.bytecode,
-        signer
-      );
-
-      const auction = await AuctionFactory.deploy(
-        NFT_CONTRACT_ADDRESS,
+      setLoading(true);
+      const tx = await auctionManagerContract.createAuction(
+        await nftContract.getAddress(),
         tokenId,
-        ethers.parseEther(startingBid),
-        Number(duration),
-        account // plataforma cobra comision
+        parseEther(startingBid),
+        parseInt(duration)
       );
-      await auction.waitForDeployment();
-
-      const auctionAddress = await auction.getAddress();
-        setStatus("Auction created successfully!");
+      await tx.wait();
+      showSuccess(`Subasta creada para NFT #${tokenId}`);
+      setTokenId("");
     } catch (err) {
       console.error(err);
-        setStatus("Error creating auction");
+      showError("Error al crear la subasta");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="create-auction">
-      <h2>Create Your Auction</h2>
+    <div className="auction-container">
+      <h3>Crear Subasta</h3>
       <input
-        type="text"
-        placeholder="Enter token ID"
+        type="number"
+        placeholder="Token ID"
         value={tokenId}
         onChange={(e) => setTokenId(e.target.value)}
       />
       <input
         type="text"
-        placeholder="Starting bid (in ETH)"
+        placeholder="Puja inicial (ETH)"
         value={startingBid}
         onChange={(e) => setStartingBid(e.target.value)}
       />
       <input
-        type="text"
-        placeholder="Duration (in seconds)"
+        type="number"
+        placeholder="Duración en segundos"
         value={duration}
         onChange={(e) => setDuration(e.target.value)}
       />
-      <button onClick={handleCreateAuction} disabled={!account}>
-        Create Auction
+      <button onClick={handleCreateAuction} disabled={!account || loading}>
+        {loading ? "Creando..." : "Crear Subasta"}
       </button>
-      {status && <p>{status}</p>}
     </div>
   );
 };

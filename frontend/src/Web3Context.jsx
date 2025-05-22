@@ -1,44 +1,92 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { ethers } from "ethers";
 import NFTCollectionABI from "./contracts/NFTCollection.json";
-import EnglishAuctionABI from "./contracts/EnglishAuction.json";
+import AuctionManagerABI from "./contracts/AuctionManager.json";
 import deployments from "./contracts/deployments.json";
 
 const Web3Context = createContext();
 
-export const Web3Provider = ({ children }) => {
-    const [account, setAccount] = useState(null);
-    const [nftContract, setNftContract] = useState(null);
-    const [auctionContract, setAuctionContract] = useState(null);
+const Web3Provider = ({ children }) => {
+  const [account, setAccount] = useState(null);
+  const [nftContract, setNftContract] = useState(null);
+  const [auctionManagerContract, setAuctionManagerContract] = useState(null);
 
+  const NFT_CONTRACT_ADDRESS = deployments.NFTCollection;
+  const AUCTION_MANAGER_ADDRESS = deployments.AuctionManager;
 
-    const NFT_CONTRACT_ADDRESS = deployments.NFTCollection;
-    const AUCTION_CONTRACT_ADDRESS = deployments.EnglishAuction;
-
-    // 🔹 Conectar MetaMask
-    const connectWallet = async () => {
-        if (!window.ethereum) {
-            alert("MetaMask no está instalado.");
-            return;
-        }
-
+  // 🔁 Auto-reconexión
+  useEffect(() => {
+    const init = async () => {
+      if (window.ethereum) {
         const provider = new ethers.BrowserProvider(window.ethereum);
-        const accounts = await provider.send("eth_requestAccounts", []);
-        const signer = await provider.getSigner();
+        const accounts = await window.ethereum.request({ method: "eth_accounts" });
 
-        const nftInstance = new ethers.Contract(NFT_CONTRACT_ADDRESS, NFTCollectionABI.abi, signer);
-        const auctionInstance = new ethers.Contract(AUCTION_CONTRACT_ADDRESS, EnglishAuctionABI.abi, signer);
+        if (accounts.length > 0) {
+          const signer = await provider.getSigner();
+          const nftInstance = new ethers.Contract(NFT_CONTRACT_ADDRESS, NFTCollectionABI.abi, signer);
+          const auctionInstance = new ethers.Contract(AUCTION_MANAGER_ADDRESS, AuctionManagerABI.abi, signer);
 
-        setAccount(accounts[0]);
-        setNftContract(nftInstance);
-        setAuctionContract(auctionInstance);
+          setAccount(accounts[0]);
+          setNftContract(nftInstance);
+          setAuctionManagerContract(auctionInstance);
+        }
+      }
     };
 
-    return (
-        <Web3Context.Provider value={{ account, connectWallet, nftContract, auctionContract }}>
-            {children}
-        </Web3Context.Provider>
-    );
+    init();
+  }, []);
+
+  // 🔁 Listeners
+  useEffect(() => {
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", () => window.location.reload());
+      window.ethereum.on("chainChanged", () => window.location.reload());
+    }
+  }, []);
+
+  // 🔌 Conectar
+  const connectWallet = async () => {
+    if (!window.ethereum) {
+      alert("MetaMask no está instalado.");
+      return;
+    }
+
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const accounts = await provider.send("eth_requestAccounts", []);
+    const signer = await provider.getSigner();
+
+    const nftInstance = new ethers.Contract(NFT_CONTRACT_ADDRESS, NFTCollectionABI.abi, signer);
+    const auctionInstance = new ethers.Contract(AUCTION_MANAGER_ADDRESS, AuctionManagerABI.abi, signer);
+
+    setAccount(accounts[0]);
+    setNftContract(nftInstance);
+    setAuctionManagerContract(auctionInstance);
+  };
+
+  const disconnectWallet = () => {
+    setAccount(null);
+    setNftContract(null);
+    setAuctionManagerContract(null);
+  };
+
+  return (
+    <Web3Context.Provider
+      value={{
+        account,
+        connectWallet,
+        disconnectWallet,
+        nftContract,
+        auctionManagerContract,
+      }}
+    >
+      {children}
+    </Web3Context.Provider>
+  );
 };
 
-export const useWeb3 = () => useContext(Web3Context);
+// ✅ Hook exportado como función nombrada
+function useWeb3() {
+  return useContext(Web3Context);
+}
+
+export { Web3Provider, useWeb3 };
