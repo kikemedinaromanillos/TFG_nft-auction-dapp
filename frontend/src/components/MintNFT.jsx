@@ -39,25 +39,12 @@ const MintNFT = () => {
     });
   };
 
-  const downloadFile = (blob, filename) => {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
   const handleMint = async () => {
     setLoading(true);
     try {
       const { file, imageUrl, fileName, blob } = await generateImage();
       setPreviewUrl(imageUrl);
 
-      // 1. Descargar imagen
-      downloadFile(file, `${fileName}.png`);
-
-      // 2. Crear metadata enriquecido
       const contractAddress = await nftContract.getAddress();
       const sizeKB = (blob.size / 1024).toFixed(1) + " KB";
 
@@ -74,18 +61,21 @@ const MintNFT = () => {
         ]
       };
 
-      const jsonBlob = new Blob([JSON.stringify(metadata, null, 2)], {
-        type: "application/json",
+      // Enviar al servidor backend para guardar en /public/nfts
+      const formData = new FormData();
+      formData.append("files", file);
+      formData.append("files", new File([JSON.stringify(metadata, null, 2)], `${fileName}.json`, { type: "application/json" }));
+
+      const uploadRes = await fetch("http://localhost:4000/upload", {
+        method: "POST",
+        body: formData
       });
 
-      // 3. Descargar metadata
-      downloadFile(jsonBlob, `${fileName}.json`);
+      if (!uploadRes.ok) throw new Error("Error al subir los archivos al servidor local");
 
-      // 4. Crear un tokenURI simulado
       const tokenURI = `${window.location.origin}/nfts/${fileName}.json`;
       console.log("📄 tokenURI simulado:", tokenURI);
 
-      // 5. Mintear usando contrato y MetaMask
       const mintPrice = await nftContract.mintPrice();
       const mintTx = await nftContract.mintNFT(tokenURI, { value: mintPrice });
       const receipt = await mintTx.wait();
@@ -112,7 +102,7 @@ const MintNFT = () => {
 
   return (
     <div className="mint-container">
-      <h3>Mintear y aprobar NFT (local sin IPFS)</h3>
+      <h3>Mintear y aprobar NFT (guardado en /public/nfts)</h3>
       <button onClick={handleMint} disabled={!account || loading}>
         {loading ? "Procesando..." : "Mintear y Aprobar"}
       </button>
