@@ -760,8 +760,8 @@
       ]
     },
     "/mnt/c/Users/enmay/desktop/UCJC/TFG/nft-auction-dapp/backend/contracts/NFTCollection.sol": {
-      "lastModificationDate": 1741179760243,
-      "contentHash": "fbd745b4d7be8b2ecb5b8a0914ee6ac4",
+      "lastModificationDate": 1748118604234,
+      "contentHash": "a0686471ad81f95c1e39016c9148ab3b",
       "sourceName": "contracts/NFTCollection.sol",
       "solcConfig": {
         "version": "0.8.20",

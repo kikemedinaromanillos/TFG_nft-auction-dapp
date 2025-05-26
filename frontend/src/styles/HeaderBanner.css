@@ -2,75 +2,54 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 1rem 2rem;
   background-color: #111;
   color: #fff;
-  padding: 1rem 2rem;
-  border-bottom: 2px solid #222;
+  border-bottom: 1px solid #222;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-.logo img {
-  height: 40px;
+.header-left .logo img {
+  height: 32px;
 }
 
-.center {
-  flex: 1;
-  text-align: center;
+.header-center {
+  display: flex;
+  gap: 2rem;
 }
 
-.right {
+.header-center a {
+  color: #ccc;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.header-center a:hover {
+  color: #fff;
+}
+
+.header-right {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-button {
-  background-color: #1e88e5;
-  border: none;
+.wallet-address {
+  font-size: 0.9rem;
+  color: #8f8f8f;
+}
+
+.wallet-btn {
+  background-color: transparent;
+  border: 1px solid #888;
+  color: #fff;
   padding: 0.5rem 1rem;
-  border-radius: 8px;
-  color: white;
+  border-radius: 6px;
   cursor: pointer;
 }
 
-button:hover {
-  background-color: #1565c0;
+.wallet-btn:hover {
+  border-color: #fff;
 }
-
-.connected {
-  font-weight: bold;
-  color: #90ee90;
-}
-
-.nav-item {
-  margin-left: 1rem;
-}
-
-.my-auctions-link a {
-  color: #42a5f5;
-  text-decoration: none;
-  font-weight: bold;
-  background: #222;
-  padding: 0.4rem 0.8rem;
-  border-radius: 6px;
-  transition: background 0.2s ease;
-}
-
-.my-auctions-link a:hover {
-  background: #2d2d2d;
-}
-
-.disconnect-btn {
-  background-color: #c62828;
-  border: none;
-  color: white;
-  padding: 0.4rem 0.8rem;
-  border-radius: 6px;
-  margin-left: 1rem;
-  cursor: pointer;
-}
-
-.disconnect-btn:hover {
-  background-color: #b71c1c;
-}
-
-

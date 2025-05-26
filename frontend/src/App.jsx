@@ -1,13 +1,13 @@
-import './styles/App.css';
+import "./styles/App.css";
 import HeaderBanner from "./components/HeaderBanner";
-import MintNFT from "./components/MintNFT";
-import ApproveNFT from "./components/ApproveNFT";
+import Home from "./components/Home";
+import MyNFTs from "./components/MyNFTs";
+import MyAuctions from "./components/MyAuctions";
 import CreateAuction from "./components/CreateAuction";
-import AuctionList from "./components/AuctionList";
 import BidAuction from "./components/BidAuction";
 import FinalizeAuction from "./components/FinalizeAuction";
-import MyAuctions from "./components/MyAuctions";
-import { Routes, Route } from 'react-router-dom';
+import NotFound from "./components/NotFound";
+import { Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -18,17 +18,27 @@ function App() {
       <div className="App">
         <ToastContainer position="top-right" autoClose={3000} theme="dark" />
         <Routes>
-          <Route path="/" element={
-            <>
-              <MintNFT />
-              <ApproveNFT />
-              <CreateAuction />
-              <AuctionList />
-            </>
-          } />
-          <Route path="/auction/:id" element={<BidAuction />} />
-          <Route path="/auction/:id/finalize" element={<FinalizeAuction />} />
+          {/* Página principal con portada y subastas activas */}
+          <Route path="/" element={<Home />} />
+
+          {/* NFTs del usuario: listado y opción de mintear */}
+          <Route path="/my-nfts" element={<MyNFTs />} />
+
+          {/* Subastas creadas por el usuario: activas y finalizadas */}
           <Route path="/my-auctions" element={<MyAuctions />} />
+
+          {/* Crear subasta a partir de un tokenId */}
+          <Route path="/create-auction/:tokenId" element={<CreateAuction />} />
+
+          {/* Ver y pujar por una subasta */}
+          <Route path="/auction/:id" element={<BidAuction />} />
+
+          {/* Finalizar subasta (si eres el creador y ya terminó) */}
+          <Route path="/auction/:id/finalize" element={<FinalizeAuction />} />
+
+          {/* Ruta por defecto para manejar 404 */}
+          <Route path="*" element={<NotFound />} />
+
         </Routes>
       </div>
     </>

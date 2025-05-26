@@ -1,3 +1,56 @@
+(await ethers.provider.getBlock("latest")).timestamp
+subasta3.endTime
+const subasta3 = await auction3.auctions(0)
+const auction3 = await ethers.getContractAt("AuctionManager", "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512")
+await network.provider.send("evm_mine")
+await network.provider.send("evm_increaseTime", [86400])
+(await ethers.provider.getBlock("latest")).timestamp
+subasta2.endTime
+const subasta2 = await auction2.auctions(0)
+const auction2 = await ethers.getContractAt("AuctionManager", "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512")
+(await ethers.provider.getBlock("latest")).timestamp
+subasta.endTime
+const subasta = await auction.auctions(0)
+const auction = await ethers.getContractAt("AuctionManager", "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512")
+await network.provider.send("evm_mine")
+await network.provider.send("evm_increaseTime", [86400])
+(await ethers.provider.getBlock("latest")).timestamp
+subasta.endTime
+const subasta = await auction.auctions(0)
+const auction = await ethers.getContractAt("AuctionManager", "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512")
+await network.provider.send("evm_mine")
+await network.provider.send("evm_increaseTime", [86400])
+await NFT.tokenURI(0) // o 1, 2...
+const NFT = await ethers.getContractAt("NFTCollection", "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0")
+await network.provider.send("evm_mine")
+await network.provider.send("evm_increaseTime", [86400])
+(await ethers.provider.getBlock("latest")).timestamp
+subasta3.endTime
+const subasta3 = await auction2.auctions(0)
+(await ethers.provider.getBlock("latest")).timestamp
+subasta.endTime
+const subasta2 = await auction.auctions(0)
+const auction2 = await ethers.getContractAt("AuctionManager", "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512")
+(await ethers.provider.getBlock("latest")).timestamp
+subasta.endTime
+const subasta = await auction.auctions(0)
+const auction = await ethers.getContractAt("AuctionManager", "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512")
+(await ethers.provider.getBlock("latest")).timestamp // timestamp actual
+subasta.endTime   // timestamp límite
+const subasta = await auction.auctions(0)
+const auction = await ethers.getContractAt("AuctionManager", "DIRECCION_DEL_CONTRATO")
+await network.provider.send("evm_mine")
+await network.provider.send("evm_increaseTime", [86400]) // avanzar 1 día
+await network.provider.send("evm_mine")
+await network.provider.send("evm_increaseTime", [86400]) // avanzar 1 día
+await network.provider.send("evm_mine")
+await network.provider.send("evm_increaseTime", [86400]) // Avanza 1 día
+await network.provider.send("evm_mine")
+await network.provider.send("evm_increaseTime", [86400])
+await network.provider.send("evm_mine")
+await network.provider.send("evm_increaseTime", [86400])
+await network.provider.send("evm_mine")
+await network.provider.send("evm_increaseTime", [86400])
 await nftCollection.ownerOf(0);
 ethers.formatEther(await ethers.provider.getBalance(deployer.address));
 ethers.formatEther(await ethers.provider.getBalance(user.address));

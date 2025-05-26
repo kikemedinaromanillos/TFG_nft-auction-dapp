@@ -1,40 +1,46 @@
-.auction-container {
-    background: #1a1a1a;
-    padding: 2rem;
-    margin: 2rem auto;
-    border-radius: 12px;
-    max-width: 600px;
-    color: white;
-    text-align: center;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
-  }
-  
-  .auction-container input {
-    width: 80%;
-    padding: 0.6rem;
-    margin-bottom: 1rem;
-    border: 1px solid #444;
-    border-radius: 6px;
-    background: #2a2a2a;
-    color: white;
-  }
-  
-  .auction-container button {
-    padding: 0.6rem 1.2rem;
-    background-color: #f57c00;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    cursor: pointer;
-  }
-  
-  .auction-container button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-  
-  .status-msg {
-    margin-top: 1rem;
-    font-weight: bold;
-  }
-  
+.auction-form {
+  max-width: 500px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  color: #eee;
+  text-align: center;
+}
+
+.auction-form h2 {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+}
+
+.auction-form p {
+  font-size: 0.95rem;
+  color: #aaa;
+  margin-bottom: 2rem;
+}
+
+.auction-form input {
+  width: 100%;
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+  background-color: #111;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: #fff;
+}
+
+.auction-form button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #444;
+  border: none;
+  color: #fff;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.auction-form button:hover {
+  background-color: #666;
+}

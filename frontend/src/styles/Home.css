@@ -1,0 +1,29 @@
+.home-container {
+    padding: 3rem 2rem;
+    max-width: 1000px;
+    margin: auto;
+    color: #eee;
+  }
+  
+  .intro-section {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  
+  .intro-section h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  
+  .intro-section p {
+    font-size: 1.1rem;
+    color: #aaa;
+    max-width: 700px;
+    margin: 1rem auto 0;
+  }
+  
+  .auction-section {
+    margin-top: 2rem;
+  }
+  

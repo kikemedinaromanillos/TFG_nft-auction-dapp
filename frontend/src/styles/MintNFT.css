@@ -1,40 +1,47 @@
 .mint-container {
-    background: #1a1a1a;
-    padding: 2rem;
-    margin: 2rem auto;
-    border-radius: 12px;
-    max-width: 600px;
-    color: white;
-    text-align: center;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
-  }
-  
-  .mint-container input {
-    width: 80%;
-    padding: 0.6rem;
-    margin-bottom: 1rem;
-    border: 1px solid #444;
-    border-radius: 6px;
-    background: #2a2a2a;
-    color: white;
-  }
-  
-  .mint-container button {
-    padding: 0.6rem 1.2rem;
-    background-color: #1e88e5;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    cursor: pointer;
-  }
-  
-  .mint-container button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-  
-  .status-msg {
-    margin-top: 1rem;
-    font-weight: bold;
-  }
-  
+  max-width: 500px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  color: #eee;
+  text-align: center;
+}
+
+.mint-container h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.mint-container button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #444;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.mint-container button:hover {
+  background-color: #666;
+}
+
+.preview-container {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.preview-container h4 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: #ccc;
+}
+
+.preview-container img {
+  max-width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+}

@@ -1,0 +1,27 @@
+{
+  "name": "NFT nft-dcafb7",
+  "description": "Generado localmente sin IPFS",
+  "image": "nft-dcafb7.png",
+  "attributes": [
+    {
+      "trait_type": "Dimensions",
+      "value": "400x400"
+    },
+    {
+      "trait_type": "File Size",
+      "value": "6.2 KB"
+    },
+    {
+      "trait_type": "Blockchain",
+      "value": "Hardhat (localhost)"
+    },
+    {
+      "trait_type": "Token Standard",
+      "value": "ERC-721"
+    },
+    {
+      "trait_type": "Contract Address",
+      "value": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+    }
+  ]
+}

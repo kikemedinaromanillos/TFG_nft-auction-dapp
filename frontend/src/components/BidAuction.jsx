@@ -12,7 +12,7 @@ const BidAuction = () => {
   const { showSuccess, showError, showWarning } = useToast();
 
   const [auction, setAuction] = useState(null);
-  const [tokenURI, setTokenURI] = useState("");
+  const [metadata, setMetadata] = useState(null);
   const [bidAmount, setBidAmount] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -20,11 +20,17 @@ const BidAuction = () => {
     try {
       const a = await auctionManagerContract.auctions(id);
       const tokenId = Number(a.tokenId);
-      const highestBid = a.highestBid;       // mantener BigInt o BigNumber
+      const highestBid = a.highestBid;
       const startingBid = a.startingBid;
       const endTime = Number(a.endTime);
 
       const uri = await nftContract.tokenURI(tokenId);
+      const metadataUrl = uri.startsWith("ipfs://")
+        ? uri.replace("ipfs://", "https://ipfs.io/ipfs/")
+        : uri;
+
+      const res = await fetch(metadataUrl);
+      const data = await res.json();
 
       setAuction({
         tokenId,
@@ -34,9 +40,9 @@ const BidAuction = () => {
         ended: a.ended,
         seller: a.seller,
         highestBidder: a.highestBidder,
+        tokenURI: uri
       });
-
-      setTokenURI(uri);
+      setMetadata(data);
     } catch (err) {
       console.error("❌ Error al cargar subasta:", err);
       showError("No se pudo cargar la subasta.");
@@ -77,12 +83,14 @@ const BidAuction = () => {
   useEffect(() => {
     if (auctionManagerContract && nftContract) {
       fetchAuction();
-      window.auctionManagerContract = auctionManagerContract;
-      window.nftContract = nftContract;
     }
   }, [auctionManagerContract, nftContract]);
 
-  if (!auction) return <p>Cargando subasta...</p>;
+  if (!auction || !metadata) return <p>Cargando subasta...</p>;
+
+  const imageUrl = metadata.image.startsWith("ipfs://")
+    ? metadata.image.replace("ipfs://", "https://ipfs.io/ipfs/")
+    : auction.tokenURI.replace(/[^/]+$/, metadata.image);
 
   const minBidValue = Math.max(
     parseFloat(formatEther(auction.startingBid)),
@@ -94,10 +102,17 @@ const BidAuction = () => {
     <div className="bid-container">
       <h2>Subasta NFT #{auction.tokenId}</h2>
       <img
-        src={tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/")}
+        src={imageUrl}
         alt={`NFT #${auction.tokenId}`}
         style={{ maxWidth: "100%", marginBottom: "1rem", borderRadius: "10px" }}
       />
+
+      <p><strong>Nombre:</strong> {metadata.name}</p>
+      <p><strong>Descripción:</strong> {metadata.description}</p>
+      {metadata.attributes?.map((attr) => (
+        <p key={attr.trait_type}><strong>{attr.trait_type}:</strong> {attr.value}</p>
+      ))}
+
       <p><strong>Vendedor:</strong> {auction.seller}</p>
       <p><strong>Mejor puja:</strong> {Number(formatEther(auction.highestBid))} ETH</p>
       <p><strong>Tiempo restante:</strong> <CountdownTimer endTime={auction.endTime} /></p>

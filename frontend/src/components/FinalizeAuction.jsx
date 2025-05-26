@@ -1,16 +1,20 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useWeb3 } from "../Web3Context";
 import { useToast } from "../hooks/useToast";
+import { ethers } from "ethers";
 import "../styles/FinalizeAuction.css";
 
 const FinalizeAuction = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { auctionManagerContract, nftContract, account } = useWeb3();
+  const { showSuccess, showError } = useToast();
+
   const [auction, setAuction] = useState(null);
   const [tokenURI, setTokenURI] = useState("");
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [currentBlockTime, setCurrentBlockTime] = useState(null);
 
   const fetchAuction = async () => {
     try {
@@ -18,8 +22,13 @@ const FinalizeAuction = () => {
       const uri = await nftContract.tokenURI(data.tokenId);
       setAuction(data);
       setTokenURI(uri);
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const block = await provider.getBlock("latest");
+      setCurrentBlockTime(block.timestamp);
     } catch (err) {
-      console.error("Error al cargar la subasta", err);
+      console.error("❌ Error al cargar la subasta", err);
+      showError("Error al cargar la subasta");
     }
   };
 
@@ -28,11 +37,14 @@ const FinalizeAuction = () => {
       setLoading(true);
       const tx = await auctionManagerContract.finalizeAuction(id);
       await tx.wait();
-      showSuccess("Subasta finalizada correctamente");
-      fetchAuction();
+      showSuccess("✅ Subasta finalizada correctamente");
+
+      setTimeout(() => {
+        navigate("/my-auctions");
+      }, 1500);
     } catch (err) {
       console.error(err);
-      showError("Error al finalizar la subasta");
+      showError("❌ Error al finalizar la subasta");
     } finally {
       setLoading(false);
     }
@@ -44,26 +56,31 @@ const FinalizeAuction = () => {
     }
   }, [id, auctionManagerContract, nftContract]);
 
-  if (!auction) return <p>Cargando subasta...</p>;
+  if (!auction || currentBlockTime === null) return <p>Cargando subasta...</p>;
 
-  const currentTime = Math.floor(Date.now() / 1000);
   const canFinalize =
     account?.toLowerCase() === auction.seller.toLowerCase() &&
-    currentTime >= Number(auction.endTime) &&
+    currentBlockTime >= Number(auction.endTime) &&
     !auction.ended;
+
+  const formattedEnd = new Date(Number(auction.endTime) * 1000).toLocaleString();
 
   return (
     <div className="finalize-container">
-      <h2>Finalizar Subasta #{id}</h2>
+      <h2>🛠 Finalizar Subasta #{id}</h2>
 
-      <img
-        src={tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/")}
-        alt={`NFT #${auction.tokenId}`}
-      />
+      {tokenURI.startsWith("ipfs://") ? (
+        <img
+          src={tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/")}
+          alt={`NFT #${auction.tokenId}`}
+        />
+      ) : (
+        <div className="placeholder-img">Imagen local</div>
+      )}
 
       <p><strong>NFT #{auction.tokenId}</strong></p>
-      <p><strong>Finaliza:</strong> {new Date(Number(auction.endTime) * 1000).toLocaleString()}</p>
-      <p><strong>Estado:</strong> {auction.ended ? "Finalizada ✅" : "Activa ⏳"}</p>
+      <p><strong>Finaliza:</strong> {formattedEnd}</p>
+      <p><strong>Estado:</strong> {auction.ended ? "✅ Finalizada" : "⏳ Activa"}</p>
 
       {auction.ended ? (
         <p className="finalized-status">✅ Subasta finalizada</p>
@@ -74,8 +91,6 @@ const FinalizeAuction = () => {
       ) : (
         <p className="note">Solo el vendedor puede finalizar la subasta una vez haya terminado.</p>
       )}
-
-      {message && <p className="status-msg">{message}</p>}
     </div>
   );
 };
