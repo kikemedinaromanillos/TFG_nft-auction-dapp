@@ -14,7 +14,28 @@ const Web3Provider = ({ children }) => {
   const NFT_CONTRACT_ADDRESS = deployments.NFTCollection;
   const AUCTION_MANAGER_ADDRESS = deployments.AuctionManager;
 
-  // 🔁 Auto-reconexión
+  // 🔁 Inicializar contratos de solo lectura SIEMPRE
+  useEffect(() => {
+    const initReadOnlyContracts = async () => {
+      try {
+        // Provider de solo lectura (sin wallet)
+        const provider = new ethers.JsonRpcProvider("http://localhost:8545"); // Cambia por tu RPC
+        
+        // Contratos de solo lectura
+        const nftInstance = new ethers.Contract(NFT_CONTRACT_ADDRESS, NFTCollectionABI.abi, provider);
+        const auctionInstance = new ethers.Contract(AUCTION_MANAGER_ADDRESS, AuctionManagerABI.abi, provider);
+
+        setNftContract(nftInstance);
+        setAuctionManagerContract(auctionInstance);
+      } catch (err) {
+        console.error("Error inicializando contratos de solo lectura:", err);
+      }
+    };
+
+    initReadOnlyContracts();
+  }, []);
+
+  // 🔁 Auto-reconexión de wallet
   useEffect(() => {
     const init = async () => {
       if (window.ethereum) {
@@ -23,6 +44,8 @@ const Web3Provider = ({ children }) => {
 
         if (accounts.length > 0) {
           const signer = await provider.getSigner();
+          
+          // Actualizar contratos con signer para transacciones
           const nftInstance = new ethers.Contract(NFT_CONTRACT_ADDRESS, NFTCollectionABI.abi, signer);
           const auctionInstance = new ethers.Contract(AUCTION_MANAGER_ADDRESS, AuctionManagerABI.abi, signer);
 
@@ -55,6 +78,7 @@ const Web3Provider = ({ children }) => {
     const accounts = await provider.send("eth_requestAccounts", []);
     const signer = await provider.getSigner();
 
+    // Actualizar contratos con signer
     const nftInstance = new ethers.Contract(NFT_CONTRACT_ADDRESS, NFTCollectionABI.abi, signer);
     const auctionInstance = new ethers.Contract(AUCTION_MANAGER_ADDRESS, AuctionManagerABI.abi, signer);
 
@@ -64,9 +88,16 @@ const Web3Provider = ({ children }) => {
   };
 
   const disconnectWallet = () => {
+    // Solo desconectar account, mantener contratos de solo lectura
     setAccount(null);
-    setNftContract(null);
-    setAuctionManagerContract(null);
+    
+    // Volver a contratos de solo lectura
+    const provider = new ethers.JsonRpcProvider("http://localhost:8545");
+    const nftInstance = new ethers.Contract(NFT_CONTRACT_ADDRESS, NFTCollectionABI.abi, provider);
+    const auctionInstance = new ethers.Contract(AUCTION_MANAGER_ADDRESS, AuctionManagerABI.abi, provider);
+    
+    setNftContract(nftInstance);
+    setAuctionManagerContract(auctionInstance);
   };
 
   return (

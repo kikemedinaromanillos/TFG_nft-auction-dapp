@@ -1,0 +1,81 @@
+@import 'tailwindcss';
+
+@layer base {
+  * {
+    border-color: #374151;
+  }
+
+  body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #000000;
+    color: #ffffff;
+  }
+}
+
+@layer components {
+  .glass-card {
+    background: rgba(17, 24, 39, 0.3);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(55, 65, 81, 0.5);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .glow-lime {
+    box-shadow: 0 0 20px rgba(132, 204, 22, 0.5);
+  }
+
+  .glow-lime-soft {
+    box-shadow: 0 0 15px rgba(132, 204, 22, 0.2);
+  }
+
+  .glow-blue {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+  }
+
+  .glow-blue-soft {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+  }
+
+  .glow-purple {
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.5);
+  }
+
+  .glow-purple-soft {
+    box-shadow: 0 0 15px rgba(147, 51, 234, 0.2);
+  }
+
+  .glow-pink {
+    box-shadow: 0 0 20px rgba(236, 72, 153, 0.5);
+  }
+
+  .glow-pink-soft {
+    box-shadow: 0 0 15px rgba(236, 72, 153, 0.2);
+  }
+
+  .glow-orange {
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.5);
+  }
+
+  .glow-orange-soft {
+    box-shadow: 0 0 15px rgba(249, 115, 22, 0.2);
+  }
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(132, 204, 22, 0.5);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(132, 204, 22, 0.7);
+}
