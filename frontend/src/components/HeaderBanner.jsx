@@ -19,7 +19,7 @@ const HeaderBanner = () => {
               <ImageIcon className="w-6 h-6 text-black" />
             </div>
             <span className="text-xl font-light bg-gradient-to-r from-lime-400 to-blue-400 bg-clip-text text-transparent hidden sm:block">
-              NFT Auction
+              Mint & Bid
             </span>
           </Link>
 

@@ -1,7 +1,12 @@
 import AuctionList from "./AuctionList"
+import { useRef } from "react"
+import { useNavigate } from "react-router-dom"
 import { Zap, TrendingUp, Shield, Users } from "lucide-react"
 
 const Home = () => {
+
+  const auctionRef = useRef(null)
+  const navigate = useNavigate()
   const features = [
     {
       icon: Zap,
@@ -37,7 +42,7 @@ const Home = () => {
         <div className="relative max-w-6xl mx-auto text-center">
           <div className="glass-card p-12">
             <h1 className="text-5xl md:text-7xl font-thin mb-6 bg-gradient-to-r from-lime-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Bienvenido a NFT Auction
+              Bienvenido a Mint & Bid
             </h1>
             <p className="text-xl md:text-2xl text-gray-400 font-light max-w-4xl mx-auto leading-relaxed">
               Plataforma descentralizada para crear, subastar y pujar por NFTs de forma segura y transparente. Conecta
@@ -45,10 +50,18 @@ const Home = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-              <button className="bg-gradient-to-r from-lime-500 to-blue-500 hover:from-lime-600 hover:to-blue-600 text-white font-light py-4 px-8 rounded-lg transition-all duration-200 glow-lime-soft hover:glow-lime">
+              <button
+                onClick={() => {
+                  auctionRef.current?.scrollIntoView({ behavior: "smooth" })
+                }}
+                className="bg-gradient-to-r from-lime-500 to-blue-500 hover:from-lime-600 hover:to-blue-600 text-white font-light py-4 px-8 rounded-lg transition-all duration-200 glow-lime-soft hover:glow-lime"
+              >
                 Explorar Subastas
               </button>
-              <button className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 text-purple-400 hover:text-white border border-purple-500/30 py-4 px-8 rounded-lg transition-all duration-200 font-light">
+              <button
+                onClick={() => navigate("/my-nfts")}
+                className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 text-purple-400 hover:text-white border border-purple-500/30 py-4 px-8 rounded-lg transition-all duration-200 font-light"
+              >
                 Crear NFT
               </button>
             </div>
@@ -101,7 +114,7 @@ const Home = () => {
       </section>
 
       {/* Auctions Section */}
-      <section className="pb-16">
+      <section ref={auctionRef} className="pb-16">
         <AuctionList />
       </section>
     </div>

@@ -67,11 +67,11 @@ const MyNFTs = () => {
               <div>
                 <h2 className="text-3xl font-thin bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent flex items-center space-x-3">
                   <ImageIcon className="w-8 h-8 text-blue-400" />
-                  <span>{showAll ? "Todos los NFTs (modo admin)" : "Mis NFTs"}</span>
+                  <span>{showAll ? "Todos los NFTs" : "Mis NFTs"}</span>
                 </h2>
                 <p className="text-gray-400 font-light mt-2">
                   {showAll
-                    ? "Vista de inspección de todos los NFTs creados en el contrato."
+                    ? "Vista en modo administrador de inspección de todos los NFTs creados en el contrato."
                     : "Tus NFTs personales y opción para mintear nuevos."}
                 </p>
               </div>

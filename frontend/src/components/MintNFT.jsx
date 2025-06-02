@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { ethers } from "ethers"
 import { useWeb3 } from "../Web3Context"
 import { useToast } from "../hooks/useToast"
 import { v4 as uuidv4 } from "uuid"
@@ -130,21 +131,6 @@ const MintNFT = () => {
         ],
       }
 
-      // Enviar al servidor backend para guardar en /public/nfts
-      const formData = new FormData()
-      formData.append("files", file)
-      formData.append(
-        "files",
-        new File([JSON.stringify(metadata, null, 2)], `${fileName}.json`, { type: "application/json" }),
-      )
-
-      const uploadRes = await fetch("http://localhost:4000/upload", {
-        method: "POST",
-        body: formData,
-      })
-
-      if (!uploadRes.ok) throw new Error("Error al subir los archivos al servidor local")
-
       const tokenURI = `${window.location.origin}/nfts/${fileName}.json`
       console.log("📄 tokenURI simulado:", tokenURI)
 
@@ -178,6 +164,21 @@ const MintNFT = () => {
       const approveTx = await nftContract.approve(auctionAddress, tokenId)
       await approveTx.wait()
 
+      // Enviar al servidor backend para guardar en /public/nfts
+      const formData = new FormData()
+      formData.append("files", file)
+      formData.append(
+        "files",
+        new File([JSON.stringify(metadata, null, 2)], `${fileName}.json`, { type: "application/json" }),
+      )
+
+      const uploadRes = await fetch("http://localhost:4000/upload", {
+        method: "POST",
+        body: formData,
+      })
+
+      if (!uploadRes.ok) throw new Error("Error al subir los archivos al servidor local")
+
       showSuccess(`✅ NFT #${tokenId} minteado y aprobado para subasta`)
       navigate(`/create-auction/${tokenId}`)
     } catch (err) {
@@ -196,7 +197,7 @@ const MintNFT = () => {
         </div>
         <div>
           <h3 className="text-xl font-light text-white">Mintear NFT</h3>
-          <p className="text-gray-400 text-sm font-light">Crea y aprueba un NFT único (guardado en /public/nfts)</p>
+          <p className="text-gray-400 text-sm font-light">Crea y aprueba un NFT único</p>
         </div>
       </div>
 

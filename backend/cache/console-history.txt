@@ -5,6 +5,12 @@ const auction = await ethers.getContractAt("AuctionManager", "0xe7f1725E7734CE28
 await network.provider.send("evm_mine")
 await network.provider.send("evm_increaseTime", [86400])
 (await ethers.provider.getBlock("latest")).timestamp
+subasta.endTime
+const subasta = await auction.auctions(0)
+const auction = await ethers.getContractAt("AuctionManager", "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512")
+await network.provider.send("evm_mine")
+await network.provider.send("evm_increaseTime", [86400])
+(await ethers.provider.getBlock("latest")).timestamp
 subasta3.endTime
 const subasta3 = await auction3.auctions(0)
 const auction3 = await ethers.getContractAt("AuctionManager", "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512")

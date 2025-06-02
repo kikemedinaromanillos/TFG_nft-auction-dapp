@@ -1,240 +1,115 @@
-# 🏆 NFT Auction DApp - Hardhat Setup
+# NFT Auction DApp - Plataforma de Subastas de NFTs
 
-Este proyecto es una **DApp de subastas de NFT y tokens**. Aquí se documentan los pasos seguidos hasta el momento para configurar **Hardhat**, compilar y desplegar contratos inteligentes en una red local.
-
----
-
-## 📌 **1. Requisitos previos**
-Antes de comenzar, asegúrate de tener instalado:
-
-- [Node.js](https://nodejs.org/) (versión 16 o superior recomendada)
-- [VS Code](https://code.visualstudio.com/) (opcional pero recomendado)
-- Extensión **Solidity** en VS Code (para resaltar sintaxis)
+Esta aplicación descentralizada permite a los usuarios crear, mintear, listar y pujar por NFTs en subastas en tiempo real. Está desarrollada con Hardhat para el backend de contratos inteligentes, un servidor Node.js para el almacenamiento de archivos, y React con Vite para el frontend.
 
 ---
 
-## 🚀 **2. Configuración del Proyecto en Hardhat**
-### 🔹 **Crear el Proyecto**
-Ejecuta los siguientes comandos en tu terminal:
+## Requisitos previos
+
+- Node.js (v16 o superior)
+- Git (opcional, para clonar el repositorio)
+- MetaMask instalado en el navegador
+- Extensión de Solidity en VS Code (recomendado para el desarrollo)
+
+---
+
+## Instalación del proyecto
+
+1. Clonar el repositorio:
 
 ```bash
-mkdir nft-auction-dapp
-cd nft-auction-dapp
-npm init -y
-npm install --save-dev hardhat
+git clone https://github.com/usuario/nft-auction.git
+cd nft-auction
 ```
-Luego, incializa Hardhat:
+
+2. Instalar dependencias en los tres módulos:
 
 ```bash
-npx hardhat
+cd file-server
+npm install
+
+cd ../backend
+npm install
+
+cd ../frontend
+npm install
 ```
 
-Selecciona "Create a JavaScript project" y acepta las opciones por defecto.
+---
 
-### 🔹 **Instalar Dependencias**
+## Activación del entorno
+
+### Terminales separadas
+
+**Terminal 1 – Servidor de archivos -> /file-server**
 
 ```bash
-npm install --save-dev @nomicfoundation/hardhat-toolbox dotenv
-npm install @openzeppelin/contracts
-```
-## 🛠️ **3. Configuración de Hardhat**
-
-Edita el archivo `hardhat.config.js` para asegurarte de que usa Solidity 0.8.20:
-
-```javascript
-require("@nomicfoundation/hardhat-toolbox");
-
-module.exports = {
-  solidity: "0.8.20",
-  networks: {
-    hardhat: {}, // Red local de Hardhat
-  },
-};
-```
-## 📝 **4. Crear y Compilar un Contrato**
-
-Crea la carpeta `contracts/` y dentro el archivo `HelloWorld.sol`:
-
-```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
-
-contract HelloWorld {
-    string public message = "Hello, Hardhat!";
-
-    function setMessage(string calldata _message) external {
-        message = _message;
-    }
-}
+cd file-server
+node index.js
 ```
 
-### Compilar el contrato
+Guarda imágenes `.png` y metadatos `.json` en `/public/nfts` tras crear un NFT.
+
+---
+
+**Terminal 2 – Red local con Hardhat -> /backend**
 
 ```bash
-npx hardhat compile
-```
-
-Si ves `Compilation finished successfully`, ¡todo está bien! 🎉
-
-## 📡 **5. Desplegar en la Red Local**
-### 🔹 **Levantar la blockchain local**
-
-```bash
+cd backend
 npx hardhat node
 ```
 
-Esto iniciará un nodo de Ethereum en `http://127.0.0.1:8545/`.
+Levanta una blockchain local accesible desde `http://localhost:8545`.
 
+---
 
-### 🔹 **Crear un Script de Despliegue**
-Crea la carpeta `scripts/` y dentro `deploy.js`:
-
-```javascript
-const hre = require("hardhat");
-
-async function main() {
-  const [deployer] = await hre.ethers.getSigners();
-  console.log("Deploying contract with the account:", deployer.address);
-
-  const Contract = await hre.ethers.getContractFactory("HelloWorld");
-  const contract = await Contract.deploy();
-  
-  await contract.waitForDeployment();
-
-  console.log(`Contract deployed to: ${await contract.getAddress()}`);
-}
-
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
-```
-
-### 🔹 **Desplegar el Contrato**
-Ejecuta el siguiente comando en otra terminal (mientras el nodo está corriendo):
+**Terminal 3 – Frontend -> /frontend**
 
 ```bash
-npx hardhat run scripts/deploy.js --network localhost
+cd frontend
+npm run dev:full
 ```
 
-Si todo sale bien, verás un mensaje con la dirección del contrato:
+Este comando realiza:
+
+- Despliegue automático de los contratos en la red local de Hardhat
+- Guardado de direcciones y ABIs en `frontend/src/contracts`
+- Inicio del frontend en `http://localhost:5173`
+
+---
+
+## Simulación de finalización de una subasta
+
+Para poder finalizar una subasta (sin esperar el tiempo real), es posible simular el paso del tiempo:
+
+1. Con `npx hardhat node` en ejecución, abrir la consola:
 
 ```bash
-Deploying contract with the account: 0xf39Fd6...
-Contract deployed to: 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
-```
-
-## 🖥️ **6. Interactuar con el Contrato**
-Abre la consola de Hardhat:
-
-```bash
+cd backend
 npx hardhat console --network localhost
 ```
-Prueba interactuar con el contrato:
+
+2. Ejecutar el siguiente código para avanzar 1 día:
 
 ```javascript
-const [owner] = await ethers.getSigners();
-const Contract = await ethers.getContractFactory("HelloWorld");
-const contract = await Contract.attach("0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512");
+await network.provider.send("evm_increaseTime", [86400]); // Avanza 1 día
+await network.provider.send("evm_mine"); // Mina un nuevo bloque
 
-// Leer el mensaje
-await contract.message();
-
-// Cambiar el mensaje
-await contract.setMessage("Hola Blockchain!");
-
-// Verificar el nuevo mensaje
-await contract.message();
-```
-
-Si devuelve `'Hola Blockchain!'`, significa que el contrato funciona correctamente. ✅
-
-# --------------------------------------------------------
-# --------------------------------------------------------
-
-# 🧪 Pruebas del Flujo de Subasta con NFT creado por un Usuario en Hardhat Console
-
-## 1️⃣ Conectar las Cuentas y los Contratos
-
-### Obtener cuentas
-```javascript
-const [deployer, user, bidder1, bidder2] = await ethers.getSigners();
-```
-📌 `user` = Creador del NFT (vendedor)  
-📌 `bidder1` y `bidder2` = Postores  
-📌 `deployer` = Plataforma (cobra comisión)
-
-### Conectar contratos
-```javascript
-const NFTCollection = await ethers.getContractFactory("NFTCollection");
-const nftCollection = await NFTCollection.attach("DIRECCION_DEL_CONTRATO_NFT");
-
-const EnglishAuction = await ethers.getContractFactory("EnglishAuction");
-const auction = await EnglishAuction.attach("DIRECCION_DEL_CONTRATO_AUCTION");
-```
----
-## 3️⃣ Verificar Estado de Subasta
-```javascript
-await auction.highestBid();
-await auction.highestBidder();
-await auction.auctionEndTime();
+const auction = await ethers.getContractAt("AuctionManager", "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512");
+const subasta = await auction.auctions(0);
+subasta.endTime;
+(await ethers.provider.getBlock("latest")).timestamp;
 ```
 
 ---
-## 4️⃣ Realizar Pujas
 
-### Bidder1 ofrece 0.02 ETH
-```javascript
-await auction.connect(bidder1).bid({ value: ethers.parseEther("0.02") });
-```
-Verificar:
-```javascript
-await auction.highestBid();
-await auction.highestBidder();
-```
+## Descripción general del flujo
 
-### Bidder2 ofrece 0.05 ETH
-```javascript
-await auction.connect(bidder2).bid({ value: ethers.parseEther("0.05") });
-```
-Verificar:
-```javascript
-await auction.highestBid();
-await auction.highestBidder();
-```
+1. El usuario puede crear un NFT desde la app.
+2. Se genera la imagen y metadatos, que se almacenan localmente.
+3. El NFT es minteado y aprobado para subasta.
+4. Se crea la subasta especificando el precio inicial.
+5. Otros usuarios pueden pujar durante el tiempo activo.
+6. Al finalizar, el NFT se transfiere al mejor postor.
 
 ---
-## 5️⃣ Verificar Balances tras Pujas
-```javascript
-ethers.formatEther(await ethers.provider.getBalance(bidder1.address));
-ethers.formatEther(await ethers.provider.getBalance(bidder2.address));
-ethers.formatEther(await ethers.provider.getBalance(user.address));
-```
-
----
-## 6️⃣ Finalizar Subasta
-### Avanzar el tiempo:
-```javascript
-await network.provider.send("evm_increaseTime", [86400]);
-await network.provider.send("evm_mine");
-```
-### Finalizar:
-```javascript
-await auction.connect(user).finalizeAuction();
-```
-
----
-## 7️⃣ Verificar Resultados Finales
-```javascript
-ethers.formatEther(await ethers.provider.getBalance(bidder1.address));
-ethers.formatEther(await ethers.provider.getBalance(bidder2.address));
-ethers.formatEther(await ethers.provider.getBalance(user.address));
-ethers.formatEther(await ethers.provider.getBalance(deployer.address));
-```
-
-### Verificar propiedad del NFT:
-```javascript
-await nftCollection.ownerOf(0);
-```
-✅ Debe ser `bidder2`
-

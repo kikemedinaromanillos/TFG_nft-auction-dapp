@@ -286,7 +286,7 @@ const BidAuction = () => {
                     placeholder={`${minBidFormatted} (puja mínima)`}
                     value={bidAmount}
                     onChange={(e) => setBidAmount(e.target.value)}
-                    disabled={!account}
+                    disabled={!account || auction.ended}
                     className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-4 pr-16 text-white font-mono placeholder-gray-500 focus:border-purple-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                   <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
@@ -303,7 +303,7 @@ const BidAuction = () => {
                 {account ? (
                   <button
                     onClick={handleBid}
-                    disabled={loading}
+                    disabled={loading || auction.ended}
                     className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-gray-600 disabled:to-gray-700 text-white font-light py-4 px-6 rounded-lg transition-all duration-200 glow-purple-soft hover:glow-purple disabled:opacity-50"
                   >
                     {loading ? (

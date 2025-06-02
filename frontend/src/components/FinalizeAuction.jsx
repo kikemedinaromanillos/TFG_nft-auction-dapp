@@ -15,8 +15,28 @@ const FinalizeAuction = () => {
 
   const [auction, setAuction] = useState(null)
   const [tokenURI, setTokenURI] = useState("")
+  const [metadata, setMetadata] = useState(null)
   const [loading, setLoading] = useState(false)
   const [currentBlockTime, setCurrentBlockTime] = useState(null)
+
+  // Función para truncar texto largo (especialmente direcciones)
+  const truncateText = (text, maxLength = 20) => {
+    if (!text) return text
+    const str = text.toString()
+    if (str.length <= maxLength) return str
+
+    // Si parece una dirección de Ethereum (empieza con 0x)
+    if (str.startsWith("0x") && str.length === 42) {
+      return `${str.slice(0, 6)}...${str.slice(-4)}`
+    }
+
+    // Para otros textos largos
+    if (str.length > maxLength) {
+      return `${str.slice(0, maxLength)}...`
+    }
+
+    return str
+  }
 
   const fetchAuction = async () => {
     try {
@@ -24,6 +44,13 @@ const FinalizeAuction = () => {
       const uri = await nftContract.tokenURI(data.tokenId)
       setAuction(data)
       setTokenURI(uri)
+
+      const metadataUrl = uri.startsWith("ipfs://")
+        ? uri.replace("ipfs://", "https://ipfs.io/ipfs/")
+        : uri
+      const res = await fetch(metadataUrl)
+      const meta = await res.json()
+      setMetadata(meta)
 
       const provider = new ethers.BrowserProvider(window.ethereum)
       const block = await provider.getBlock("latest")
@@ -58,7 +85,7 @@ const FinalizeAuction = () => {
     }
   }, [id, auctionManagerContract, nftContract])
 
-  if (!auction || currentBlockTime === null) {
+  if (!auction || !metadata || currentBlockTime === null) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="glass-card p-8 text-center">
@@ -68,6 +95,10 @@ const FinalizeAuction = () => {
       </div>
     )
   }
+
+  const imageUrl = metadata.image?.startsWith("ipfs://")
+    ? metadata.image.replace("ipfs://", "https://ipfs.io/ipfs/")
+    : tokenURI.replace(/[^/]+$/, metadata.image)
 
   const canFinalize =
     account?.toLowerCase() === auction.seller.toLowerCase() &&
@@ -91,38 +122,41 @@ const FinalizeAuction = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column - NFT Preview */}
-          <div className="glass-card p-6">
-            <h3 className="text-xl font-light text-white mb-4">NFT Preview</h3>
+          {/* NFT Preview + Metadatos */}
+          <div className="glass-card p-6 space-y-4">
+            <h3 className="text-xl font-light text-white">NFT</h3>
 
-            {tokenURI.startsWith("ipfs://") ? (
-              <div className="relative overflow-hidden rounded-xl">
-                <img
-                  src={tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/") || "/placeholder.svg"}
-                  alt={`NFT #${auction.tokenId}`}
-                  className="w-full h-auto rounded-xl"
-                />
-              </div>
-            ) : (
-              <div className="w-full h-64 bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-gray-600 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                    <Zap className="w-8 h-8 text-gray-400" />
-                  </div>
-                  <p className="text-gray-400 font-light">Imagen local</p>
+            <div className="relative overflow-hidden rounded-xl">
+              <img
+                src={imageUrl || "/placeholder.svg"}
+                alt={`NFT #${auction.tokenId}`}
+                className="w-full h-auto rounded-xl"
+              />
+            </div>
+
+            <div className="mt-2 space-y-2">
+              <div className="text-white text-lg font-light">{metadata.name}</div>
+              <div className="text-gray-400 text-sm">{metadata.description}</div>
+            </div>
+
+            {metadata.attributes?.length > 0 && (
+              <div className="space-y-2 mt-4">
+                <h4 className="text-blue-400 text-sm">Atributos</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {metadata.attributes.map((attr, i) => (
+                    <div key={i} className="bg-gray-800/30 p-3 rounded-lg">
+                      <div className="text-gray-400 text-sm">{attr.trait_type}</div>
+                      <div className="text-white font-mono text-sm break-all" title={attr.value}>
+                          {truncateText(attr.value)}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
-
-            <div className="mt-6 space-y-3">
-              <div className="flex justify-between items-center p-3 bg-gray-800/30 rounded-lg">
-                <span className="text-gray-400">Token ID:</span>
-                <span className="text-white font-mono">#{auction.tokenId}</span>
-              </div>
-            </div>
           </div>
 
-          {/* Right Column - Auction Details */}
+          {/* Right Column */}
           <div className="space-y-6">
             {/* Auction Info */}
             <div className="glass-card p-6 space-y-4">
@@ -156,7 +190,7 @@ const FinalizeAuction = () => {
               </div>
             </div>
 
-            {/* Action Section */}
+            {/* Acciones */}
             <div className="glass-card p-6">
               <h3 className="text-xl font-light text-white mb-4">Acción</h3>
 
